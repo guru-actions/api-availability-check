@@ -1,3 +1,6 @@
+---
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: action
 name: Check API Availability
 description: Generic HTTP endpoint check with optional authentication
 inputs:
