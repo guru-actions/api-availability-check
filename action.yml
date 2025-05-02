@@ -23,7 +23,7 @@ runs:
     - id: checkendpoint
       name: Check Endpoint
       uses: docker://curlimages/curl:8.13.0
-      shell: bash
+      shell: sh
       run: |
         set -e
 
