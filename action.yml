@@ -16,7 +16,8 @@ inputs:
     default: "200"
 outputs:
   available:
-    description: "Returns 'true' if the endpoint is reachable and matches the expected status code"
+    value:  ${{ steps.check.outputs.AVAILABLE }}
+    description: "return from the api call"
 runs:
   using: "composite"
   steps:
@@ -39,7 +40,7 @@ runs:
         echo "Received HTTP status: $RESPONSE"
 
         if [[ "$RESPONSE" == "${{ inputs.expected_status }}" ]]; then
-          echo "available=true" >> "$CLOUDBEES_OUTPUTS"
+          echo "available=true" >> "$CLOUDBEES_OUTPUTS/AVAILABLE"
         else
-          echo "available=false" >> "$CLOUDBEES_OUTPUTS"
+          echo "available=false" >> "$CLOUDBEES_OUTPUTS/AVAILABLE"
         fi
