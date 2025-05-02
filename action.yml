@@ -1,0 +1,46 @@
+name: Check API Availability
+description: Generic HTTP endpoint check with optional authentication
+inputs:
+  url:
+    description: "Full API URL to check (e.g., https://argocd.example.com/api/v1/applications)"
+    required: true
+  auth_header:
+    description: "Optional Authorization header (e.g., 'Bearer <token>' or 'Basic <base64>')"
+    required: false
+  expected_status:
+    description: "Expected HTTP status code (default: 200)"
+    required: false
+    default: "200"
+outputs:
+  available:
+    description: "Returns 'true' if the endpoint is reachable and matches the expected status code"
+runs:
+  using: "composite"
+  steps:
+    - id: deploy_chart
+      name: Deploy Chart
+      uses: docker://curlimages/curl:8.13.0
+      shell: bash
+      run: |
+        set -e
+
+        echo "Checking endpoint: ${{ inputs.url }}"
+        AUTH_ARG=""
+        if [[ -n "${{ inputs.auth_header }}" ]]; then
+          AUTH_ARG="-H \"Authorization: ${{ inputs.auth_header }}\""
+          echo "Using custom Authorization header"
+        fi
+
+        RESPONSE=$(eval curl -s -o /dev/null -w "%{http_code}" \
+          $AUTH_ARG \
+          "${{ inputs.url }}")
+
+        echo "Received HTTP status: $RESPONSE"
+
+        if [[ "$RESPONSE" == "${{ inputs.expected_status }}" ]]; then
+          echo "Endpoint is available"
+          echo "available=true" >> $CLOUDBEES_OUTPUT
+        else
+          echo "Endpoint not available or returned unexpected status"
+          echo "available=false" >> $CLOUDBEES_OUTPUT
+        fi
