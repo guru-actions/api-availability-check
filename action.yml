@@ -20,30 +20,24 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - id: checkendpoint
-      name: Check Endpoint
-      uses: docker://curlimages/curl:8.13.0
-      shell: sh
+    - id: check
+      shell: bash
       run: |
         set -e
 
         echo "Checking endpoint: ${{ inputs.url }}"
         AUTH_ARG=""
         if [[ -n "${{ inputs.auth_header }}" ]]; then
-          AUTH_ARG="-H \"Authorization: ${{ inputs.auth_header }}\""
+          AUTH_ARG="-H 'Authorization: ${{ inputs.auth_header }}'"
           echo "Using custom Authorization header"
         fi
 
-        RESPONSE=$(eval curl -s -o /dev/null -w "%{http_code}" \
-          $AUTH_ARG \
-          "${{ inputs.url }}")
+        RESPONSE=$(eval curl -s -o /dev/null -w "%{http_code}" $AUTH_ARG "${{ inputs.url }}")
 
         echo "Received HTTP status: $RESPONSE"
 
         if [[ "$RESPONSE" == "${{ inputs.expected_status }}" ]]; then
-          echo "Endpoint is available"
-          echo "available=true" >> $CLOUDBEES_OUTPUT
+          echo "available=true" >> "$CLOUDBEES_OUTPUT"
         else
-          echo "Endpoint not available or returned unexpected status"
-          echo "available=false" >> $CLOUDBEES_OUTPUT
+          echo "available=false" >> "$CLOUDBEES_OUTPUT"
         fi
