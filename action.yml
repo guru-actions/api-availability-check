@@ -20,8 +20,8 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - id: deploy_chart
-      name: Deploy Chart
+    - id: checkendpoint
+      name: Check Endpoint
       uses: docker://curlimages/curl:8.13.0
       shell: bash
       run: |
