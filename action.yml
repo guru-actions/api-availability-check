@@ -21,7 +21,9 @@ runs:
   using: "composite"
   steps:
     - id: check
-      shell: bash
+      name: check
+      uses: "docker://curlimages/curl:8.13.0"
+      shell: sh
       run: |
         set -e
 
@@ -37,7 +39,7 @@ runs:
         echo "Received HTTP status: $RESPONSE"
 
         if [[ "$RESPONSE" == "${{ inputs.expected_status }}" ]]; then
-          echo "available=true" >> "$CLOUDBEES_OUTPUT"
+          echo "available=true" >> "$CLOUDBEES_OUTPUTS"
         else
-          echo "available=false" >> "$CLOUDBEES_OUTPUT"
+          echo "available=false" >> "$CLOUDBEES_OUTPUTS"
         fi
